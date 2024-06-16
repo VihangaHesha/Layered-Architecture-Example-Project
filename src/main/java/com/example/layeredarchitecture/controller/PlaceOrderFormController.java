@@ -106,11 +106,12 @@ public class PlaceOrderFormController {
                             new Alert(Alert.AlertType.ERROR, "There is no such customer associated with the id " + newValue + "").show();
                         }
 
-                        PreparedStatement pstm = connection.prepareStatement("SELECT * FROM Customer WHERE id=?");
+                       /* PreparedStatement pstm = connection.prepareStatement("SELECT * FROM Customer WHERE id=?");
                         pstm.setString(1, newValue + "");
                         ResultSet rst = pstm.executeQuery();
                         rst.next();
-                        CustomerDTO customerDTO = new CustomerDTO(newValue + "", rst.getString("name"), rst.getString("address"));
+                        CustomerDTO customerDTO = new CustomerDTO(newValue + "", rst.getString("name"), rst.getString("address"));*/
+                        CustomerDTO customerDTO = customerDAO.searchAllCustomers(newValue);
 
                         txtCustomerName.setText(customerDTO.getName());
                     } catch (SQLException e) {
@@ -139,12 +140,14 @@ public class PlaceOrderFormController {
                     if (!existItem(newItemCode + "")) {
 //                        throw new NotFoundException("There is no such item associated with the id " + code);
                     }
-                    Connection connection = DBConnection.getDbConnection().getConnection();
+                    /*Connection connection = DBConnection.getDbConnection().getConnection();
                     PreparedStatement pstm = connection.prepareStatement("SELECT * FROM Item WHERE code=?");
                     pstm.setString(1, newItemCode + "");
                     ResultSet rst = pstm.executeQuery();
                     rst.next();
-                    ItemDTO item = new ItemDTO(newItemCode + "", rst.getString("description"), rst.getBigDecimal("unitPrice"), rst.getInt("qtyOnHand"));
+                    ItemDTO item = new ItemDTO(newItemCode + "", rst.getString("description"), rst.getBigDecimal("unitPrice"), rst.getInt("qtyOnHand"));*/
+
+                    ItemDTO item = itemDAO.searchItems(newItemCode);
 
                     txtDescription.setText(item.getDescription());
                     txtUnitPrice.setText(item.getUnitPrice().setScale(2).toString());
@@ -330,7 +333,7 @@ public class PlaceOrderFormController {
             orderDAO.existOrder(orderId);
             connection.setAutoCommit(false);
             PreparedStatement pstm = orderDAO.saveOrder(orderId, orderDate, customerId);
-            if (pstm.executeQuery().next()) {
+            if (pstm.executeUpdate() != 1) {
                 connection.rollback();
                 connection.setAutoCommit(true);
                 return false;
@@ -347,7 +350,7 @@ public class PlaceOrderFormController {
                 ItemDTO item = findItem(detail.getItemCode());
                 item.setQtyOnHand(item.getQtyOnHand() - detail.getQty());
                 boolean isItemUpdated = itemDAO.updateItems(orderDetails,item);
-                if (isItemUpdated) {
+                if (!isItemUpdated) {
                     connection.rollback();
                     connection.setAutoCommit(true);
                     return false;

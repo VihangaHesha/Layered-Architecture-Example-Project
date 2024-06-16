@@ -93,14 +93,16 @@ public class ItemDAOImpl implements ItemDAO{
         PreparedStatement pstm = connection.prepareStatement("SELECT * FROM Item WHERE code=?");
         pstm.setString(1, newItemCode + "");
         ResultSet rst = pstm.executeQuery();
+        rst.next();
+        ItemDTO itemDTO = new ItemDTO(newItemCode + "", rst.getString("description"), rst.getBigDecimal("unitPrice"), rst.getInt("qtyOnHand"));
 
-        ItemDTO itemDTO;
+        /*ItemDTO itemDTO;
             itemDTO = new ItemDTO(
                     rst.getString("code"),
                     rst.getString("description"),
                     rst.getBigDecimal("unitprice"),
                     rst.getInt("qtyOnHand")
-            );
+            );*/
         return itemDTO;
     }
 }

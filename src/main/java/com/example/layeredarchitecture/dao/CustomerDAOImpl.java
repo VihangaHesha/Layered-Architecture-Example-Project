@@ -85,13 +85,15 @@ public class CustomerDAOImpl implements CustomerDAO{
         PreparedStatement pstm = connection.prepareStatement("SELECT * FROM Customer WHERE id=?");
         pstm.setString(1, newValue + "");
         ResultSet rst = pstm.executeQuery();
-        CustomerDTO customerDTO;
 
-        customerDTO = new CustomerDTO(
+        rst.next();
+        CustomerDTO customerDTO = new CustomerDTO(newValue + "", rst.getString("name"), rst.getString("address"));
+
+       /* customerDTO = new CustomerDTO(
                 rst.getString("id"),
                 rst.getString("name"),
                 rst.getString("adderess")
-        );
+        );*/
         return customerDTO;
     }
 }
