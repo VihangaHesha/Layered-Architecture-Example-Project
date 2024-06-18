@@ -150,7 +150,7 @@ public class ManageCustomersFormController {
                     new Alert(Alert.AlertType.ERROR, id + " already exists").show();
                 }
 
-                customerDAOP.saveCustomer(id,name,address);
+                customerDAOP.saveCustomer(id, name, address);
 
                     tblCustomers.getItems().add(new CustomerTM(id, name, address));
 
@@ -202,8 +202,7 @@ public class ManageCustomersFormController {
                 new Alert(Alert.AlertType.ERROR, "There is no such customer associated with the id " + id).show();
             }
 
-            CustomerDAOImpl customerDAO = new CustomerDAOImpl();
-            customerDAO.deleteCustomer(id);
+            customerDAOP.deleteCustomer(id);
 
             tblCustomers.getItems().remove(tblCustomers.getSelectionModel().getSelectedItem());
             tblCustomers.getSelectionModel().clearSelection();
