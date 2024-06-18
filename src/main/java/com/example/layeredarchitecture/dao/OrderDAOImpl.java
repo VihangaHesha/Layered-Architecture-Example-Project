@@ -1,6 +1,7 @@
 package com.example.layeredarchitecture.dao;
 
 import com.example.layeredarchitecture.db.DBConnection;
+import com.example.layeredarchitecture.model.OrderDTO;
 
 import java.sql.*;
 import java.time.LocalDate;
@@ -16,20 +17,20 @@ public class OrderDAOImpl implements OrderDAO{
                 "OID-", "")) + 1)) : "OID-001";
     }
     @Override
-    public void existOrder(String orderId) throws SQLException, ClassNotFoundException {
+    public boolean existOrder(String orderId) throws SQLException, ClassNotFoundException {
         Connection connection = DBConnection.getDbConnection().getConnection();
         PreparedStatement pstm = connection.prepareStatement("SELECT oid FROM `Orders` WHERE oid=?");
         pstm.setString(1,orderId);
-        pstm.executeQuery().next();
+        return pstm.executeQuery().next();
 
     }
     @Override
-    public PreparedStatement saveOrder(String orderId, LocalDate orderDate, String customerId) throws SQLException, ClassNotFoundException {
+    public boolean saveOrder(OrderDTO dto) throws SQLException, ClassNotFoundException {
         Connection connection = DBConnection.getDbConnection().getConnection();
-        PreparedStatement pst = connection.prepareStatement("INSERT INTO `Orders` (oid, date, customerID) VALUES (?,?,?)");
-        pst.setString(1,orderId);
-        pst.setDate(2, Date.valueOf(orderDate));
-        pst.setString(3,customerId);
-        return pst;
+        PreparedStatement stm = connection.prepareStatement("INSERT INTO `Orders` (oid, date, customerID) VALUES (?,?,?)");
+        stm.setString(1, dto.getOrderId());
+        stm.setDate(2, Date.valueOf(dto.getOrderDate()));
+        stm.setString(3, dto.getCustomerId());
+        return stm.executeUpdate()>0;
     }
 }

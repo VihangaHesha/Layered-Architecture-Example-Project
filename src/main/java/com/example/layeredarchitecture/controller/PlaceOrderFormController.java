@@ -4,6 +4,7 @@ import com.example.layeredarchitecture.dao.*;
 import com.example.layeredarchitecture.db.DBConnection;
 import com.example.layeredarchitecture.model.CustomerDTO;
 import com.example.layeredarchitecture.model.ItemDTO;
+import com.example.layeredarchitecture.model.OrderDTO;
 import com.example.layeredarchitecture.model.OrderDetailDTO;
 import com.example.layeredarchitecture.view.tdm.OrderDetailTM;
 import com.jfoenix.controls.JFXButton;
@@ -308,7 +309,7 @@ public class PlaceOrderFormController {
 
     public void btnPlaceOrder_OnAction(ActionEvent actionEvent) {
         boolean b = saveOrder(orderId, LocalDate.now(), cmbCustomerId.getValue(),
-                tblOrderDetails.getItems().stream().map(tm -> new OrderDetailDTO(tm.getCode(), tm.getQty(), tm.getUnitPrice())).collect(Collectors.toList()));
+                tblOrderDetails.getItems().stream().map(tm -> new OrderDetailDTO(orderId,tm.getCode(), tm.getQty(), tm.getUnitPrice())).collect(Collectors.toList()));
 
         if (b) {
             new Alert(Alert.AlertType.INFORMATION, "Order has been placed successfully").show();
@@ -330,15 +331,19 @@ public class PlaceOrderFormController {
         try {
             Connection connection = DBConnection.getDbConnection().getConnection();
 
-            orderDAO.existOrder(orderId);
+            boolean b1 =orderDAO.existOrder(orderId);
+            if (b1){
+                return false;
+            }
             connection.setAutoCommit(false);
-            PreparedStatement pstm = orderDAO.saveOrder(orderId, orderDate, customerId);
-            if (pstm.executeUpdate() != 1) {
+            boolean b2 = orderDAO.saveOrder(new OrderDTO(orderId, orderDate, customerId));
+            if (!b2) {
                 connection.rollback();
                 connection.setAutoCommit(true);
                 return false;
             }
-            boolean isOrderDetailSaved = orderDetailDAO.saveOrderDetails(orderDetails,orderId);
+            for (OrderDetailDTO  detail : orderDetails){
+            boolean isOrderDetailSaved = orderDetailDAO.saveOrderDetail(detail);
                 if (!isOrderDetailSaved) {
                     connection.rollback();
                     connection.setAutoCommit(true);
@@ -346,10 +351,11 @@ public class PlaceOrderFormController {
                 }
 
 //                //Search & Update Item
-            for (OrderDetailDTO detail : orderDetails){
+
                 ItemDTO item = findItem(detail.getItemCode());
                 item.setQtyOnHand(item.getQtyOnHand() - detail.getQty());
-                boolean isItemUpdated = itemDAO.updateItems(orderDetails,item);
+
+                boolean isItemUpdated = itemDAO.updateItems(new ItemDTO(item.getCode(), item.getDescription(), item.getUnitPrice(), item.getQtyOnHand()));
                 if (!isItemUpdated) {
                     connection.rollback();
                     connection.setAutoCommit(true);

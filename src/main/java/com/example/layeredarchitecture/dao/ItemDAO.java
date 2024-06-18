@@ -14,7 +14,7 @@ public interface ItemDAO {
     public void deleteItem(String code) throws SQLException, ClassNotFoundException;
     public void saveItems(String code, String description, BigDecimal unitPrice, int qtyOnHand) throws SQLException, ClassNotFoundException;
     public void updateItem(String code, String description, BigDecimal unitPrice, int qtyOnHand) throws SQLException, ClassNotFoundException;
-    public boolean updateItems(List<OrderDetailDTO> orderDetails, ItemDTO item) throws SQLException, ClassNotFoundException;
+    public boolean updateItems(ItemDTO item) throws SQLException, ClassNotFoundException;
     public boolean exixtIds(String code) throws SQLException, ClassNotFoundException;
     public String generateIds () throws SQLException, ClassNotFoundException;
     public ItemDTO searchItems(String newItemCode) throws SQLException, ClassNotFoundException;
