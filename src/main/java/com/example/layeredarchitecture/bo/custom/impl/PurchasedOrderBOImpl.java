@@ -1,6 +1,7 @@
-package com.example.layeredarchitecture.bo;
+package com.example.layeredarchitecture.bo.custom.impl;
 
-import com.example.layeredarchitecture.dao.SQLUtil;
+import com.example.layeredarchitecture.bo.custom.PurchasedOrderBO;
+import com.example.layeredarchitecture.dao.DAOFactory;
 import com.example.layeredarchitecture.dao.custom.OrderDAO;
 import com.example.layeredarchitecture.dao.custom.OrderDetailDAO;
 import com.example.layeredarchitecture.dao.custom.impl.OrderDAOImpl;
@@ -8,12 +9,13 @@ import com.example.layeredarchitecture.dao.custom.impl.OrderDetailDAOImpl;
 import com.example.layeredarchitecture.model.OrderDTO;
 import com.example.layeredarchitecture.model.OrderDetailDTO;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class PurchasedOrderBOImpl implements PurchasedOrderBO{
-    OrderDAO orderDAO = new OrderDAOImpl();
-    OrderDetailDAO orderDetailDAO = new OrderDetailDAOImpl();
+public class PurchasedOrderBOImpl implements PurchasedOrderBO {
+
+    //I hava to implement the exists Item and Customer methods!!!!
+    OrderDAO orderDAO = (OrderDAO) DAOFactory.getDaoFactory().getDao(DAOFactory.DAPTypes.ORDER);
+    OrderDetailDAO orderDetailDAO = (OrderDetailDAO) DAOFactory.getDaoFactory().getDao(DAOFactory.DAPTypes.ORDER_DETAIL);
     @Override
     public String generateNewId() throws SQLException, ClassNotFoundException {
         return orderDAO.generateNewId();

@@ -1,12 +1,12 @@
 package com.example.layeredarchitecture.controller;
 
-import com.example.layeredarchitecture.bo.*;
-import com.example.layeredarchitecture.dao.custom.CustomerDAO;
-import com.example.layeredarchitecture.dao.custom.ItemDAO;
-import com.example.layeredarchitecture.dao.custom.impl.CustomerDAOImpl;
-import com.example.layeredarchitecture.dao.custom.impl.ItemDAOImpl;
-import com.example.layeredarchitecture.dao.custom.impl.OrderDAOImpl;
-import com.example.layeredarchitecture.dao.custom.impl.OrderDetailDAOImpl;
+import com.example.layeredarchitecture.bo.BOFactory;
+import com.example.layeredarchitecture.bo.custom.CustomerBO;
+import com.example.layeredarchitecture.bo.custom.ItemBO;
+import com.example.layeredarchitecture.bo.custom.PurchasedOrderBO;
+import com.example.layeredarchitecture.bo.custom.impl.CustomerBOImpl;
+import com.example.layeredarchitecture.bo.custom.impl.ItemBOImpl;
+import com.example.layeredarchitecture.bo.custom.impl.PurchasedOrderBOImpl;
 import com.example.layeredarchitecture.db.DBConnection;
 import com.example.layeredarchitecture.model.CustomerDTO;
 import com.example.layeredarchitecture.model.ItemDTO;
@@ -57,9 +57,9 @@ public class PlaceOrderFormController {
     public Label lblDate;
     public Label lblTotal;
     private String orderId;
-    ItemBO itemBO = new ItemBOImpl();
-    CustomerBO customerBO = new CustomerBOImpl();
-    PurchasedOrderBO purchasedOrderBO = new PurchasedOrderBOImpl();
+    ItemBO itemBO = (ItemBO) BOFactory.getBoFactory().getBo(BOFactory.BOType.ITEM);
+    CustomerBO customerBO = (CustomerBO) BOFactory.getBoFactory().getBo(BOFactory.BOType.CUSTOMER);
+    PurchasedOrderBO purchasedOrderBO = (PurchasedOrderBO) BOFactory.getBoFactory().getBo(BOFactory.BOType.PURCHASED);
 
     public void initialize() throws SQLException, ClassNotFoundException {
 
@@ -117,7 +117,7 @@ public class PlaceOrderFormController {
                         ResultSet rst = pstm.executeQuery();
                         rst.next();
                         CustomerDTO customerDTO = new CustomerDTO(newValue + "", rst.getString("name"), rst.getString("address"));*/
-                        CustomerDTO customerDTO = customerBO.searchAll(newValue);
+                        CustomerDTO customerDTO = customerBO.searchAllCustomers(newValue);
 
                         txtCustomerName.setText(customerDTO.getName());
                     } catch (SQLException e) {
@@ -218,7 +218,7 @@ public class PlaceOrderFormController {
 
     private void loadAllCustomerIds() {
         try {
-            ArrayList<CustomerDTO> customerDTOS =customerBO.loadAll();
+            ArrayList<CustomerDTO> customerDTOS =customerBO.loadAllCustomers();
 
             for (CustomerDTO customerDTO : customerDTOS){
                 cmbCustomerId.getItems().add(customerDTO.getId());
