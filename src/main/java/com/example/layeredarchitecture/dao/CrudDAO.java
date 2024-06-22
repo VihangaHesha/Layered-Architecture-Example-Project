@@ -1,6 +1,6 @@
 package com.example.layeredarchitecture.dao;
 
-import com.example.layeredarchitecture.model.CustomerDTO;
+import com.example.layeredarchitecture.dto.ItemDTO;
 
 import java.sql.SQLException;
 import java.util.ArrayList;

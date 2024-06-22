@@ -3,8 +3,10 @@ package com.example.layeredarchitecture.bo.custom.impl;
 import com.example.layeredarchitecture.bo.custom.ItemBO;
 import com.example.layeredarchitecture.dao.DAOFactory;
 import com.example.layeredarchitecture.dao.custom.ItemDAO;
-import com.example.layeredarchitecture.dao.custom.impl.ItemDAOImpl;
-import com.example.layeredarchitecture.model.ItemDTO;
+import com.example.layeredarchitecture.dto.CustomerDTO;
+import com.example.layeredarchitecture.dto.ItemDTO;
+import com.example.layeredarchitecture.entity.Customer;
+import com.example.layeredarchitecture.entity.Item;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -13,7 +15,16 @@ public class ItemBOImpl implements ItemBO {
     ItemDAO itemDAO = (ItemDAO) DAOFactory.getDaoFactory().getDao(DAOFactory.DAPTypes.ITEM);
 
     public ArrayList<ItemDTO> loadAll() throws SQLException, ClassNotFoundException {
-        return itemDAO.loadAll();
+        ArrayList<ItemDTO> itemDTOS = new ArrayList<>() ;
+        ArrayList<Item> items = itemDAO.loadAll();
+        for (Item item : items){
+            ItemDTO itemDTO = new ItemDTO(item.getCode(),
+                    item.getDescription(),
+                    item.getUnitPrice(),
+                    item.getQtyOnHand());
+            itemDTOS.add(itemDTO);
+        }
+        return itemDTOS;
     }
 
     public void delete(String code) throws SQLException, ClassNotFoundException {
@@ -21,11 +32,13 @@ public class ItemBOImpl implements ItemBO {
     }
 
     public boolean save(ItemDTO dto) throws SQLException, ClassNotFoundException {
-        return itemDAO.save(dto);
+        Item item = new Item(dto.getCode(),dto.getDescription(),dto.getUnitPrice(),dto.getQtyOnHand());
+        return itemDAO.save(item);
     }
 
     public boolean update(ItemDTO dto) throws SQLException, ClassNotFoundException {
-        return itemDAO.update(dto);
+        Item item = new Item(dto.getCode(),dto.getDescription(),dto.getUnitPrice(),dto.getQtyOnHand());
+        return itemDAO.update(item);
     }
 
     public boolean exist(String code) throws SQLException, ClassNotFoundException {
@@ -37,6 +50,8 @@ public class ItemBOImpl implements ItemBO {
     }
 
     public ItemDTO searchAll(String newItemCode) throws SQLException, ClassNotFoundException {
-        return itemDAO.searchAll(newItemCode);
+        Item item = itemDAO.searchAll(newItemCode);
+        ItemDTO itemDTO = new ItemDTO(item.getCode(),item.getDescription(),item.getUnitPrice(),item.getQtyOnHand());
+        return itemDTO;
     }
 }

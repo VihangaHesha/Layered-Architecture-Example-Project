@@ -4,10 +4,10 @@ import com.example.layeredarchitecture.bo.custom.PurchasedOrderBO;
 import com.example.layeredarchitecture.dao.DAOFactory;
 import com.example.layeredarchitecture.dao.custom.OrderDAO;
 import com.example.layeredarchitecture.dao.custom.OrderDetailDAO;
-import com.example.layeredarchitecture.dao.custom.impl.OrderDAOImpl;
-import com.example.layeredarchitecture.dao.custom.impl.OrderDetailDAOImpl;
-import com.example.layeredarchitecture.model.OrderDTO;
-import com.example.layeredarchitecture.model.OrderDetailDTO;
+import com.example.layeredarchitecture.dto.OrderDTO;
+import com.example.layeredarchitecture.dto.OrderDetailDTO;
+import com.example.layeredarchitecture.entity.Order;
+import com.example.layeredarchitecture.entity.OrderDetail;
 
 import java.sql.SQLException;
 
@@ -28,11 +28,13 @@ public class PurchasedOrderBOImpl implements PurchasedOrderBO {
 
     @Override
     public boolean save(OrderDTO dto) throws SQLException, ClassNotFoundException {
-        return orderDAO.save(dto);
+        Order order = new Order(dto.getOrderId(),dto.getOrderDate(),dto.getCustomerId());
+        return orderDAO.save(order);
     }
 
     @Override
-    public boolean save(OrderDetailDTO orderDetails) throws SQLException, ClassNotFoundException {
-        return orderDetailDAO.save(orderDetails);
+    public boolean save(OrderDetailDTO dto) throws SQLException, ClassNotFoundException {
+        OrderDetail orderDetail = new OrderDetail(dto.getOid(),dto.getItemCode(),dto.getQty(),dto.getUnitPrice());
+        return orderDetailDAO.save(orderDetail);
     }
 }
